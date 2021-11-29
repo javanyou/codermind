@@ -1,0 +1,101 @@
+{% extends 'base_generic.html' %}
+
+{% load humanize %}
+
+{% block title %}计划详情：{{ reportschedule.sid }}{% endblock title %}
+
+{% block content %}
+<h3>{{ reportschedule.sid }} 期</h3>
+
+<div id="container" style="min-width:400px; height: 400px; margin: 0 auto"></div>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>报告者</th>
+      <th>上报时间</th>
+      <th>最近更新</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for report in reportschedule.report_set.all %}
+      <tr>
+        <td><a href="{% url 'report-detail' report.id %}" class="btn-link">{{ report.author.get_full_name }}</a></td>
+        <td>{{ report.created_at|date:'SHORT_DATE_FORMAT' }}</td>
+        <td>{{ report.updated_at|naturaltime }}</td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock content %}
+
+{% block scripts %}
+<script language="JavaScript">
+$(document).ready(function() {
+   var chart = {
+      type: 'column'
+   };
+   var title = {
+      text: '项目分布图'
+   };
+   var subtitle = {
+      text: '数据来源：{{ reportschedule.sid }}本期汇报情况'
+   };
+   var xAxis = {
+      categories: [{% for c in x_categories %} "{{ c }}",{% endfor %}]
+   };
+   var yAxis = {
+      min: 0,
+      title: {
+         text: '时间分配 (小时)'
+      }
+   };
+   var tooltip = {
+		  formatter: function () {
+		  	return '<b>' + this.x + '</b><br/>' +
+		  		this.series.name + ': ' + this.y + '<br/>' +
+		  		'总量: ' + this.point.stackTotal;
+		  }
+    }
+   var plotOptions = {
+      column: {
+			  stacking: 'normal',
+			  dataLabels: {
+			  	enabled: true,
+			  	color: (Highcharts.theme && Highcharts.theme.dataLabelsColor) || 'white',
+			  	style: {
+			  		// 如果不需要数据标签阴影，可以将 textOutline 设置为 'none'
+			  		textOutline: '1px 1px black'
+			  	}
+			  }
+      }
+   };
+   var credits = {
+      enabled: false
+   };
+
+   var series= [
+    {% for key, value in series_by_project.items %}
+    {
+      name: "{{ key }}",
+      data:[{% for item in value %}{{ item }},{% endfor %}]
+    },
+    {% endfor %}
+   ]
+
+   var json = {};
+   json.chart = chart;
+   json.title = title;
+   json.subtitle = subtitle;
+   json.tooltip = tooltip;
+   json.xAxis = xAxis;
+   json.yAxis = yAxis;
+   json.series = series;
+   json.plotOptions = plotOptions;
+   json.credits = credits;
+   $('#container').highcharts(json);
+
+});
+</script>
+<script src="http://cdn.highcharts.com.cn/highcharts/9.3.0/highcharts.js"></script>
+{% endblock scripts %}

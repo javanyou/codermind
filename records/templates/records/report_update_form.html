@@ -1,0 +1,91 @@
+{% extends 'base_generic.html' %}
+
+{% block title %}{{ title }}{% endblock title %}
+
+{% block content %}
+
+<h1>{{ title }}</h1>
+<form method="post">
+  {% csrf_token %}
+  {% for field in form %}
+   {% for error in field.errors %}
+    <p> {{ error }} </p>
+  {% endfor %}
+  <div class="form-group row">
+    <label for="{{ field.id_for_label }}" class="col-auto  col-form-label">{{ field.label }}</label>
+    <div class="col-auto">
+      {{ field }}
+    </div>
+  </div>
+
+  {% endfor %}
+  <table class="table">
+    <thead>
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col"style="width: 14%">项目</th>
+        <th scope="col" style="width: 40%">标题</th>
+        <th scope="col">耗时</th>
+        <th scope="col">进度</th>
+        <th scope="col" style="width: 6%">删除？</th>
+      </tr>
+    </thead>
+    {% if line_formset.non_form_errors %}
+      <div class="alert alertdanger">{{formset.non_form_errors}}</div>
+    {% endif %}
+    {{ line_formset.management_form }}
+    <tbody id="form-container">
+    {% for form in line_formset %}
+      <tr class="line-form">
+        {# Include the hidden fields #}
+        {% for hidden in form.hidden_fields %}
+        {{ hidden }}
+        {% endfor %}
+        <th scope="row">{{ forloop.counter }}</th>
+        {% for field in form.visible_fields %}
+        <td>
+        {{ field.errors }}
+        {{ field }}
+        </td>
+        {% endfor %}
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  <div class="row">
+    <button id="add-form" type="button" class="btn btn-outline-secondary ml-4">Add</button>
+    <div class="ml-auto mr-4">
+      <a href="javascript:history.back(-1)" class="btn btn-secondary mr-4">取消</a>
+      <input type='submit' class="btn btn-primary" value='保存'>
+    </div>
+  </div>
+
+</form>
+
+{% endblock content %}
+
+{% block scripts %}
+<script language="JavaScript">
+let lineForm = document.querySelectorAll(".line-form")
+let container = document.querySelector("#form-container")
+let addButton = document.querySelector("#add-form")
+let totalForms = document.querySelector("#id_lines-TOTAL_FORMS")
+
+let formNum = lineForm.length-1
+addButton.addEventListener('click', addForm)
+
+function addForm(e){
+    e.preventDefault()
+
+    let newForm = lineForm[0].cloneNode(true)
+    let formRegex = RegExp(`lines-(\\d){1}-`,'g')
+
+    formNum++
+    newForm.querySelector('th').innerHTML=formNum+1
+    newForm.innerHTML = newForm.innerHTML.replace(formRegex, `lines-${formNum}-`)
+    container.append(newForm)
+
+    totalForms.setAttribute('value', `${formNum+1}`)
+}
+</script>
+{% endblock scripts %}

@@ -1,0 +1,104 @@
+{% extends 'base_generic.html' %}
+{% load static %}
+
+{% block title %}项目人力分配报表{% endblock title %}
+
+{% block styles %}
+<link rel="stylesheet" href="{% static 'daterangepicker/daterangepicker.css' %}" />
+{% endblock styles %}
+
+{% block content %}
+<h3>项目人力分配报表</h3>
+<div class="form-group">
+  <label for="dateRange" class="">查询时间</label>
+  <input type="text" name="dateRange" id="dateRange" class="form-control" placeholder="选择需要查询的日期" aria-describedby="helpId">
+  <small id="helpId" class="text-muted">选择查询日期哟！</small>
+</div>
+<div class="row">
+<button id="btn-search" class="btn btn-primary ml-auto mr-4">查询</button>
+</div>
+<br>
+<div id="container" style="min-width:400px; min-height: 500px; margin: 0 auto"></div>
+{% endblock content %}
+
+{% block scripts %}
+<script src="{% static 'js/moment.min.js' %}"></script>
+<script src="{% static 'daterangepicker/daterangepicker.js' %}"></script>
+<script src="http://cdn.highcharts.com.cn/highcharts/9.3.0/highcharts.js"></script>
+<script type="text/javascript">
+from_date = "{{ from_date }}"
+to_date = "{{ to_date }}"
+$(document).ready(function() {
+  {% comment %} 配置时间区间控件的默认参数 {% endcomment %}
+  $('#dateRange').daterangepicker({
+    startDate: moment("{{ from_date }}"),
+    endDate: moment("{{ to_date }}"),
+    ranges: {
+       '今天': [moment(), moment()],
+       '昨天': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+       '近7天': [moment().subtract(6, 'days'), moment()],
+       '近30天': [moment().subtract(29, 'days'), moment()],
+       '当月': [moment().startOf('month'), moment().endOf('month')],
+       '上月': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+    }
+  },function(start, end, label) {
+    from_date = start.format('YYYY-MM-DD')
+    to_date = end.format('YYYY-MM-DD')
+    window.location.href="{% url 'data-report-by-project' %}?"+`from_date=${from_date}&to_date=${to_date}`;
+  });
+
+  // load data
+  var chart = {
+    type: 'column'
+  };
+
+   var title = {
+      text: '项目人力分布图'
+   };
+   var subtitle = {
+      text: '数据来源：{{ from_date }} 至 {{ to_date }} 之间汇报情况'
+   };
+   var xAxis = {
+     type: 'category'
+   };
+   var yAxis = {
+      min: 0,
+      title: {
+         text: '时间分配 (小时)'
+      }
+   };
+   var tooltip = {
+      pointFormat: '时间消耗: <b>{point.y:.1f} 小时</b>'
+    }
+   var plotOptions = {
+   };
+   var credits = {
+      enabled: false
+   };
+
+  var series= [{
+    name: '总人力',
+    data: [
+      {% for key, value in series_by_project.items %}
+      ["{{ key }}", {{ value }}],
+      {% endfor %}
+    ]
+  }]
+
+  var json = {};
+  json.chart = chart;
+  json.title = title;
+  json.subtitle = subtitle;
+  json.tooltip = tooltip;
+  json.xAxis = xAxis;
+  json.yAxis = yAxis;
+  json.series = series;
+  json.plotOptions = plotOptions;
+  json.credits = credits;
+  $('#container').highcharts(json);
+});
+$('#btn-search').click(function() {
+  window.location.href="{% url 'data-report-by-project' %}?"+`from_date=${from_date}&to_date=${to_date}`;
+})
+</script>
+{% endblock scripts %}

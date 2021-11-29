@@ -1,0 +1,27 @@
+{% extends 'base_generic.html' %}
+
+{% block title %}周报列表{% endblock title %}
+
+{% block content %}
+<h2>周报列表</h2>
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">期号</th>
+      <th scope="col">提交者</th>
+      <th scope="col">提交日期</th>
+      <th scope="col">操作</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for report in report_list %}
+      <tr>
+        <td>{{ report.schedule }}</td>
+        <td><a href="{% url 'user-reports' report.author.id %}" class="btn-link">{{ report.author.get_full_name }}</a></td>
+        <td>{{ report.created_at }}</td>
+        <td><a href="{% url 'report-detail' report.pk %}" class="btn btn-primary"><i class="ion ion-md-create"></i>&nbsp; 详情</a></td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock content %}

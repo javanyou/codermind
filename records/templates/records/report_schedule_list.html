@@ -1,0 +1,38 @@
+{% extends 'base_generic.html' %}
+
+{% block content %}
+{% if schedule_list %}
+<h1>周报计划表</h1>
+<table class="table">
+    <thead>
+        <tr>
+            <th>期号</th>
+            <th>起始日期</th>
+            <th>截止日期</th>
+            <th>公休(天)</th>
+            <th>周报(份)</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for schedule in schedule_list %}
+        <tr>
+            <td scope="row"><a href="{% url 'schedule-detail' schedule.pk %}" class="btn-link">{{ schedule.sid }}</a></td>
+            <td>{{ schedule.start_date }}</td>
+            <td>{{ schedule.end_date }}</td>
+            <td>{{ schedule.public_holidays }}</td>
+            <td>{{ schedule.report_set.count }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<div class="jumbotron">
+  <h1 class="display-5">周报计划表</h1>
+  <p class="lead">根据公司工作安排，指定周报的填写周期。</p>
+  <hr class="my-4">
+  <p>方便团队进行时间管理和效率计算。</p>
+  <a class="btn btn-primary btn-lg" href="#" role="button">去写周报</a>
+</div>
+{% endif %}
+
+{% endblock content %}

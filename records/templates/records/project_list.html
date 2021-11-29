@@ -1,0 +1,11 @@
+{% extends 'base_generic.html' %}
+
+{% block title %}项目列表{% endblock title %}
+
+{% block content %}
+<ul class="list-group">
+  {% for project in project_list %}
+    <li class="list-group-item list-group-item-action">{{ project.name }}</li>
+  {% endfor %}
+</ul>
+{% endblock content %}

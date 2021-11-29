@@ -1,0 +1,126 @@
+{% extends 'base_generic.html' %}
+
+{% block title %}{{ report.author.get_full_name }}周报{% endblock title %}
+
+{% block content %}
+
+{% if user == report.author %}
+<h2>你的第<b>{{ report.schedule }}</b>期周报</h2>
+{% else %}
+<h2>{{ report.author.get_full_name }}的第<b>{{ report.schedule }}</b>期周报</h2>
+{% endif %}
+
+<div class="card">
+  <div class="card-header">
+    <ul class="nav w-100 d-lg-flex">
+      <li class="nav-item mr-auto font-weight-normal">周报详情</li>
+      {% if user == report.author %}
+      <li class="nav-item ml-atuo">
+        <a class="btn btn-primary" href="{% url 'report-update' report.id %}" >编辑</a>
+      </li>
+      {% endif %}
+    </ul>
+  </div>
+  <div class="card-body">
+    <div id="container" style="width: 550px; height: 400px; margin: 0 auto"></div>
+    <br>
+    <h3>详情</h3>
+    <table class="table table-striped table-inverse">
+      <thead class="thead-inverse">
+        <tr>
+          <th>序号</th>
+          <th>标题</th>
+          <th>项目</th>
+          <th>耗时(小时)</th>
+          <th>进度(100标识完成)</th>
+        </tr>
+        </thead>
+        <tbody>
+          {% for line in report.lines.all %}
+          <tr>
+            <td scope="row">{{ forloop.counter }}</td>
+            <td>{{ line.title }}</td>
+            <td>{{ line.project }}</td>
+            <td>{{ line.time_cost }}</td>
+            <td>{{ line.progress }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+    </table>
+  </div>
+  <div class="card-footer text-muted">
+    Footer
+  </div>
+</div>
+
+{% endblock content %}
+
+{% block scripts %}
+<script language="JavaScript">
+$(document).ready(function() {
+   var chart = {
+      type: 'column'
+   };
+   var title = {
+      text: '项目时间分配图'
+   };
+   var subtitle = {
+      text: '数据来源：本期周报条目详情'
+   };
+   var xAxis = {
+      type: 'category',
+   };
+   var yAxis = {
+      min: 0,
+      title: {
+         text: '时间分配 (小时)'
+      }
+   };
+   var tooltip = {
+        pointFormat: '时间消耗: <b>{point.y:.1f} 小时</b>'
+    }
+   var plotOptions = {
+      column: {
+         pointPadding: 0.2,
+         borderWidth: 0
+      }
+   };
+   var credits = {
+      enabled: false
+   };
+
+   var series= [{
+        name: '项目',
+        showInLegend: false,
+        data: [
+          {% for item in report_aggregate %}
+          ["{{ item.project__name }}", {{ item.total_cost }}],
+          {% endfor %}
+        ],
+        dataLabels: {
+            enabled: true,
+            rotation: -90,
+            color: '#FFFFFF',
+            align: 'right',
+            format: '{point.y:.1f}', // :.1f 为保留 1 位小数
+            y: 10
+        }
+    }]
+
+   var json = {};
+   json.chart = chart;
+   json.title = title;
+   json.subtitle = subtitle;
+   json.tooltip = tooltip;
+   json.xAxis = xAxis;
+   json.yAxis = yAxis;
+   json.series = series;
+   json.plotOptions = plotOptions;
+   json.credits = credits;
+   $('#container').highcharts(json);
+
+});
+</script>
+<script src="http://cdn.highcharts.com.cn/highcharts/9.3.0/highcharts.js"></script>
+{% endblock scripts %}
+

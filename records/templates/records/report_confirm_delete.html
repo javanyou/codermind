@@ -1,0 +1,15 @@
+{% extends 'base_generic.html' %}
+
+{% block content %}
+
+<h1>删除周报</h1>
+
+<p>确认删除第 {{ report.schedule }} 期周报?</p>
+
+<form action="" method="POST">
+  {% csrf_token %}
+  <input type="submit" class="btn btn-danger" value="确定">
+  <a href="javascript:history.back(-1)" class="btn btn-secondary ml-3">取消</a>
+</form>
+
+{% endblock content %}

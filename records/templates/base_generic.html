@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>{% block title %}{% endblock %}</title>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
+  <script nomodule="" src="https://unpkg.com/ionicons@4.5.10-0/dist/ionicons/ionicons.js"></script>
+  {% load static %}
+  <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+  {% block styles %}{% endblock styles %}
+</head>
+
+<body>
+  <header>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="{% url 'index' %}">Records</a>
+        <button class="navbar-toggler d-lg-none" type="button" data-toggle="collapse" data-target="#collapsibleNavId" aria-controls="collapsibleNavId"
+            aria-expanded="false" aria-label="Toggle navigation"></button>
+        <div class="collapse navbar-collapse" id="collapsibleNavId">
+            <ul class="navbar-nav w-100 mr-auto mt-2 mt-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'index' %}">首页 <span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'report-list' %}">周报列表</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="reportDropdownMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">周报管理</a>
+                    <div class="dropdown-menu" aria-labelledby="reportDropdownMenu">
+                        <a class="dropdown-item" href="{% url 'report-create' %}">新周报</a>
+                        <a class="dropdown-item" href="{% url 'my-reports' %}">我的周报</a>
+                    </div>
+                </li>
+                <div class="nav-item dropdown">
+                  <a class="nav-link dropdown-toggle" href="#" id="dataDropdownMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">数据管理</a>
+                  <div class="dropdown-menu" aria-labelledby="dataDropdownMenu">
+                    <a class="dropdown-item" href="{% url 'schedule-list' %}">周报计划表</a>
+                    <a class="dropdown-item" href="{% url 'project-list' %}">项目列表</a>
+                  </div>
+                </div>
+                <div class="nav-item dropdown">
+                  <a class="nav-link dropdown-toggle" href="#" id="dashbordMenu" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">报表管理</a>
+                  <div class="dropdown-menu" aria-labelledby="dashbordMenu">
+                    <a class="dropdown-item" href="{% url 'data-report-by-user' %}">人员分配报表</a>
+                    <a class="dropdown-item" href="{% url 'data-report-by-project' %}">项目分配报表</a>
+                  </div>
+                </div>
+                {% if user.is_authenticated %}
+                <li class="nav-item dropdown ml-auto">
+                  <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">当前账户：{{ user }} </a>
+                  <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
+                      <a class="dropdown-item" href="#">Action</a>
+                      <a class="dropdown-item" href="#">Another action</a>
+                      <a class="dropdown-item" href="{% url 'logout' %}">登出</a>
+                  </div>
+                </li>
+                {% else %}
+                <li class="nav-item ml-auto">
+                    <a class="nav-link" href="{% url 'login' %}">登录</a>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
+  </header>
+        {% if messages %}
+        <!-- Position it -->
+        <div class="position-fixed top-0 right-0 p-4" style="z-index: 5; right: 0; top: 0;">
+          <!-- Then put toasts within -->
+          {% for message in messages %}
+          <div class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-delay="2000">
+            <div class="toast-header">
+              <ion-icon name="alert" size="small"></ion-icon>
+              <strong class="mr-auto">{{ message.tags }}</strong>
+              <small class="text-muted">just now</small>
+              <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="toast-body">
+            {{ message }}
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+  <div class="container">
+    {% block content %}{% endblock %}
+  </div>
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js" integrity="sha384-+YQ4JLhjyBLPDQt//I+STsc9iw4uQqACwlvpslubQzn4u2UU2UFM80nGisd026JF" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/ionicons@4.5.10-0/dist/ionicons.js"></script>
+  <script>
+  $(document).ready(function () {
+    $(".toast").toast("show");
+  });
+  </script>
+  {% block scripts %}{% endblock scripts %}
+</body>
+</html>

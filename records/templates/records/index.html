@@ -1,0 +1,44 @@
+{% extends 'base_generic.html' %}
+
+{% load humanize %}
+
+{% block content %}
+
+{% if latest_report_list %}
+    {% for report in latest_report_list %}
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <div class="media flex-wrap w-100 align-items-center"> <img src="https://i.imgur.com/iNmBizf.jpg" class="d-block ui-w-40 rounded-circle" alt="">
+                        <div class="media-body ml-3"> <a href="javascript:void(0)" data-abc="true">{{ report.author.get_full_name }}</a>
+                            <div class="text-muted small">{{ report.created_at|naturaltime }}</div>
+                        </div>
+                        <div class="text-muted small ml-3">
+                            {% comment %}
+                            <div>Member since <strong>01/1/2019</strong></div>
+                            <div><strong>134</strong> posts</div>
+                            {% endcomment %}
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                  <ul>
+                    {% for line in report.lines.all %}
+                    <li> {{ line.title }} </li>
+                    {% endfor %}
+                  </ul>
+                </div>
+                <div class="card-footer d-flex flex-wrap justify-content-between align-items-center px-0 pt-0 pb-3">
+                    <div class="px-4 pt-3"> <a href="javascript:void(0)" class="text-muted d-inline-flex align-items-center align-middle" data-abc="true"> <i class="fa fa-heart text-danger"></i>&nbsp; <span class="align-middle">445</span> </a> <span class="text-muted d-inline-flex align-items-center align-middle ml-4"> <i class="fa fa-eye text-muted fsize-3"></i>&nbsp; <span class="align-middle">14532</span> </span> </div>
+                    <div class="px-4 pt-3"> <a href="{% url 'report-detail' report.pk %}" class="btn btn-primary"><i class="ion ion-md-create"></i>&nbsp; 详情</a> </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+{% else %}
+<p>暂无周报数据</p>
+{% endif %}
+
+{% endblock content %}

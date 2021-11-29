@@ -1,0 +1,32 @@
+{% extends 'base_generic.html' %}
+
+{% block title %}提交记录{% endblock title %}
+
+{% block content %}
+{% if author == user %}
+<h2>我的周报</h2>
+{% else %}
+<h2>{{ author.get_full_name }}的周报</h2>
+{% endif %}
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th scop="col">期号</th>
+      <th scop="col">提交日期</th>
+      <th scop="col" style="width: 15%;">操作</th>
+    </tr>
+  </head>
+  <tbody>
+    {% for report in report_list %}
+      <tr>
+        <td><a href="{% url 'report-detail' report.id %}" class="btn-link">{{ report.schedule }}</a></td>
+        <td>{{ report.created_at }}</td>
+        <td>
+        <a href="{% url 'report-update' report.pk %}" class="btn btn-primary">编辑</a>
+        <a href="{% url 'report-delete' report.pk %}" class="btn btn-danger">删除</a>
+        </td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock content %}
