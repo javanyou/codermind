@@ -43,7 +43,7 @@ class ReportSchedule(models.Model):
     @property
     def sid(self):
         """获取字符串id -- 格式 YyyyMmDd-YyyyMmDd 例子：202004020-20200424"""
-        return f'{self.start_date.strftime("%Y%m%d")}{self.end_date.strftime("%Y%m%d")}'
+        return f'{self.start_date.strftime("%Y-%m-%d")} ~ {self.end_date.strftime("%Y-%m-%d")}'
 
     def labour_time(self):
         """获取周报实际工作时长"""

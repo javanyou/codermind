@@ -165,7 +165,7 @@ class ReportScheduleListView(generic.ListView):
         return ReportSchedule.objects.order_by("-start_date")
 
 
-class ReprotScheduleDetailView(generic.DetailView):
+class ReportScheduleDetailView(generic.DetailView):
     model = ReportSchedule
     template_name = "records/schedule_detail.html"
 

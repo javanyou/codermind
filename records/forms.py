@@ -1,15 +1,22 @@
+from datetime import timedelta
+
+import django.utils.timezone
 from django import forms
-from django.db.models import fields
-from django.forms import widgets
+from django.utils import timezone
 
 from .models import Report, ReportLine, ReportSchedule
 
 
 class ReportForm(forms.ModelForm):
+    schedule = forms.ModelChoiceField(
+        queryset=ReportSchedule.objects.filter(end_date__gte=(timezone.now() - timedelta(1))),
+        # disabled=True,
+        widget=forms.Select({"class": "form-control"}),
+    )
+
     class Meta:
         model = Report
         fields = ("schedule",)
-        widgets = {"schedule": forms.Select({"class": "form-control"})}
 
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop("user")
@@ -25,7 +32,7 @@ class ReportForm(forms.ModelForm):
 
 class ReportUpdateForm(forms.ModelForm):
     schedule = forms.ModelChoiceField(
-        queryset=ReportSchedule.objects.all(),
+        queryset=ReportSchedule.objects.filter(end_date__gte=(timezone.now() - timedelta(1))),
         # disabled=True,
         widget=forms.Select({"class": "form-control"}),
     )
@@ -41,7 +48,8 @@ class ReportUpdateForm(forms.ModelForm):
     def clean_schedule(self):
         """对 schedule 进行数据校验"""
         schedule = self.cleaned_data["schedule"]
-        if Report.objects.filter(author=self.user, schedule=schedule).exists():
+        found = Report.objects.filter(author=self.user, schedule=schedule).first()
+        if found.id != self.instance.id:
             raise forms.ValidationError("该期周报你已经提交过啦～ 请勿重复提交喔")
         return schedule
 

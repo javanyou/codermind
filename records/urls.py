@@ -38,7 +38,7 @@ urlpatterns = [
     ),
     path(
         "schedules/<int:pk>/",
-        views.ReprotScheduleDetailView.as_view(),
+        views.ReportScheduleDetailView.as_view(),
         name="schedule-detail",
     ),
     path("reports/projects/", views.ProjectListView.as_view(), name="project-list"),
