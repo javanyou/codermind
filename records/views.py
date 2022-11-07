@@ -147,7 +147,7 @@ class ReportsByUserListView(LoginRequiredMixin, generic.ListView):
         else:
             author = self.request.user
         self.kwargs["author"] = author
-        return Report.objects.filter(author=author).order_by("created_at")
+        return Report.objects.filter(author=author).order_by("-created_at")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

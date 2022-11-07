@@ -9,7 +9,7 @@ from .models import Report, ReportLine, ReportSchedule
 
 class ReportForm(forms.ModelForm):
     schedule = forms.ModelChoiceField(
-        queryset=ReportSchedule.objects.filter(end_date__gte=(timezone.now() - timedelta(1))),
+        queryset=ReportSchedule.objects.filter(end_date__gte=(timezone.now() - timedelta(8))),
         # disabled=True,
         widget=forms.Select({"class": "form-control"}),
     )
@@ -32,7 +32,7 @@ class ReportForm(forms.ModelForm):
 
 class ReportUpdateForm(forms.ModelForm):
     schedule = forms.ModelChoiceField(
-        queryset=ReportSchedule.objects.filter(end_date__gte=(timezone.now() - timedelta(1))),
+        queryset=ReportSchedule.objects.filter(end_date__gte=(timezone.now() - timedelta(30))),
         # disabled=True,
         widget=forms.Select({"class": "form-control"}),
     )
@@ -49,7 +49,7 @@ class ReportUpdateForm(forms.ModelForm):
         """对 schedule 进行数据校验"""
         schedule = self.cleaned_data["schedule"]
         found = Report.objects.filter(author=self.user, schedule=schedule).first()
-        if found.id != self.instance.id:
+        if found is not None and found.id != self.instance.id:
             raise forms.ValidationError("该期周报你已经提交过啦～ 请勿重复提交喔")
         return schedule
 
